@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lanchonete-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: lanchonete-api
+  template:
+    metadata:
+      labels:
+        app: lanchonete-api
+    spec:
+      containers:
+        - name: lanchonete-api
+          image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
+          ports:
+            - containerPort: {{ .Values.api.service.port }}
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          env:
+            - name: DB_USER
+              value: {{ .Values.api.env.DB_USER }}
+            - name: DB_PASSWORD
+              value: {{ .Values.api.env.DB_PASSWORD }}
+            - name: DB_NAME
+              value: {{ .Values.api.env.DB_NAME }}
+            - name: DB_HOST
+              value: {{ .Values.api.env.DB_HOST }}
+            - name: DB_PORT
+              value: "{{ .Values.api.env.DB_PORT }}"
+            - name: PORT
+              value: "{{ .Values.api.env.PORT }}"
+            - name: MERCADO_PAGO_API_URL
+              value: {{ .Values.api.env.MERCADO_PAGO_API_URL }}
+            - name: MERCADO_PAGO_ACCESS_TOKEN
+              value: {{ .Values.api.env.MERCADO_PAGO_ACCESS_TOKEN }}
+            - name: MERCADO_PAGO_USER_ID
+              value: "{{ .Values.api.env.MERCADO_PAGO_USER_ID }}"
+            - name: MERCADO_PAGO_EXTERNAL_POS_ID
+              value: {{ .Values.api.env.MERCADO_PAGO_EXTERNAL_POS_ID }}
+            - name: PAYMENT_WEBHOOK_URL
+              value: {{ .Values.api.env.PAYMENT_WEBHOOK_URL }}
