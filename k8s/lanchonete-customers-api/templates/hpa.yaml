@@ -2,15 +2,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: lanchonete-api-hpa
+  name: lanchonete-customers-hpa
   labels:
-    app: lanchonete-api
+    app: lanchonete-customers
     release: lanchonete
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: lanchonete-api
+    name: lanchonete-customers
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

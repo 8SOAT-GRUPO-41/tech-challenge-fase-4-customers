@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lanchonete-api
+  name: lanchonete-customers-api
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: lanchonete-api
+      app: lanchonete-customers-api
   template:
     metadata:
       labels:
-        app: lanchonete-api
+        app: lanchonete-customers-api
     spec:
       containers:
-        - name: lanchonete-api
+        - name: lanchonete-customers-api
           image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
           ports:
             - containerPort: {{ .Values.api.service.port }}
@@ -34,13 +34,3 @@ spec:
               value: "{{ .Values.api.env.DB_PORT }}"
             - name: PORT
               value: "{{ .Values.api.env.PORT }}"
-            - name: MERCADO_PAGO_API_URL
-              value: {{ .Values.api.env.MERCADO_PAGO_API_URL }}
-            - name: MERCADO_PAGO_ACCESS_TOKEN
-              value: {{ .Values.api.env.MERCADO_PAGO_ACCESS_TOKEN }}
-            - name: MERCADO_PAGO_USER_ID
-              value: "{{ .Values.api.env.MERCADO_PAGO_USER_ID }}"
-            - name: MERCADO_PAGO_EXTERNAL_POS_ID
-              value: {{ .Values.api.env.MERCADO_PAGO_EXTERNAL_POS_ID }}
-            - name: PAYMENT_WEBHOOK_URL
-              value: {{ .Values.api.env.PAYMENT_WEBHOOK_URL }}

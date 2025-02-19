@@ -1,5 +1,7 @@
 api:
-  repository: rafaelvmasc/lanchonete-api
+  image:
+    tag: 7a79428
+    repository: rafaelvmasc/lanchonete-customers-api
   pullPolicy: IfNotPresent
   domain: yeee.app
   subdomain: lanchonete
