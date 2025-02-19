@@ -1,4 +1,4 @@
-import type { CreateCustomer, LoadCustomerByCpf } from '@/application/usecases/customer'
+import type { CreateCustomer, LoadCustomerByCpf, LoadCustomerById } from '@/application/usecases/customer'
 import type { HttpRequest, HttpResponse } from '@/infrastructure/http/interfaces'
 import { HttpStatusCode } from '@/infrastructure/http/helper'
 import type { Controller } from '@/infrastructure/controllers/interfaces'
@@ -28,6 +28,19 @@ export class LoadCustomerByCpfController implements Controller {
   async handle(request: HttpRequest<null, null, { cpf: string }>): Promise<HttpResponse> {
     const params = request.params
     const result = await this.loadCustomerByCpfUseCase.execute(params.cpf)
+    return {
+      statusCode: HttpStatusCode.OK,
+      body: result.toJSON()
+    }
+  }
+}
+
+export class LoadCustomerByIdController implements Controller {
+  constructor(private readonly loadCustomerByIdUseCase: LoadCustomerById) {}
+
+  async handle(request: HttpRequest<null, null, { id: string }>): Promise<HttpResponse> {
+    const params = request.params
+    const result = await this.loadCustomerByIdUseCase.execute(params.id)
     return {
       statusCode: HttpStatusCode.OK,
       body: result.toJSON()

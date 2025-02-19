@@ -1,4 +1,8 @@
-import { makeCreateCustomerController, makeLoadCustomerByCpfController } from '@/infrastructure/factories/controllers'
+import {
+  makeCreateCustomerController,
+  makeLoadCustomerByCpfController,
+  makeLoadCustomerByIdController
+} from '@/infrastructure/factories/controllers'
 import { errorResponseSchema } from '@/infrastructure/swagger/error-response-schema'
 import { ErrorCodes } from '@/domain/enums'
 import { customerSchema, customerSchemaWithoutId } from '@/infrastructure/swagger/schemas/customer'
@@ -38,7 +42,7 @@ export const customerRoutes = [
   },
   {
     method: 'get',
-    url: '/:cpf',
+    url: '/cpf/:cpf',
     handler: makeLoadCustomerByCpfController,
     schema: {
       tags: ['Customers'],
@@ -49,6 +53,27 @@ export const customerRoutes = [
           cpf: customerSchema.properties.cpf
         },
         required: ['cpf']
+      },
+      response: {
+        200: customerSchema,
+        404: errorResponseSchema(404, ErrorCodes.NOT_FOUND),
+        500: errorResponseSchema(500, ErrorCodes.INTERNAL_SERVER_ERROR)
+      }
+    }
+  },
+  {
+    method: 'get',
+    url: '/id/:id',
+    handler: makeLoadCustomerByIdController,
+    schema: {
+      tags: ['Customers'],
+      summary: 'Load a customer by ID',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        },
+        required: ['id']
       },
       response: {
         200: customerSchema,
