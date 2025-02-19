@@ -49,10 +49,10 @@ jobs:
 
       - name: Helm Upgrade
         env:
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.CUSTOMERS_DB_USER }}
+          DB_PASSWORD: ${{ secrets.CUSTOMERS_DB_PASSWORD }}
+          DB_NAME: ${{ secrets.CUSTOMERS_DB_NAME }}
+          DB_HOST: ${{ secrets.CUSTOMERS_DB_HOST }}
         run: |
           helm upgrade --install lanchonete-customers-api ./k8s/lanchonete-customers-api \
             --set api.env.DB_USER=$DB_USER \
