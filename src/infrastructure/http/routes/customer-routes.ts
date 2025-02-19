@@ -7,7 +7,7 @@ import type { HttpRoute } from '@/infrastructure/http/interfaces'
 export const customerRoutes = [
   {
     method: 'post',
-    url: '/customers',
+    url: '/',
     handler: makeCreateCustomerController,
     schema: {
       tags: ['Customers'],
@@ -38,7 +38,7 @@ export const customerRoutes = [
   },
   {
     method: 'get',
-    url: '/customers/:cpf',
+    url: '/:cpf',
     handler: makeLoadCustomerByCpfController,
     schema: {
       tags: ['Customers'],
