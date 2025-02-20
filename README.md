@@ -24,4 +24,6 @@ Para iniciar o microserviço de customers, siga os passos abaixo:
 
 ## Arquitetura
 
-![Arquitetura](diagrams/aws-architecture.png)
+Abaixo, está o diagrama da arquitetura do sistema, com destaque para o microserviço de customers.
+
+![Arquitetura](diagrams/architecture-fase-4-customers.png)
