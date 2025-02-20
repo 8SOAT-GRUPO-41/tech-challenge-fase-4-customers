@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify'
 import { FastifyHttpServer } from '@/infrastructure/http/fastify/server'
 
 jest.mock('@/infrastructure/http/routes', () => ({
-  productRoutes: [
+  customerRoutes: [
     {
       method: 'get',
       url: '/test',
