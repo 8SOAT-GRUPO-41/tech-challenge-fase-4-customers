@@ -4,7 +4,7 @@ module.exports = {
   roots: ['<rootDir>/tests', '<rootDir>/src'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/main/**',
+    '!<rootDir>/src/main.ts',
     '!<rootDir>/src/**/index.ts',
     '!<rootDir>/src/**/protocols/**',
     '!<rootDir>/src/**/infrastructure/factories/**',
