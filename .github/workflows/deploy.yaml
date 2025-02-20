@@ -2,17 +2,42 @@ name: Customers API Deploy
 on:
   push:
     branches: ["main"]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 env:
   CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
   DOCKER_IMAGE: rafaelvmasc/lanchonete-customers-api
 
 jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Test and Coverage
+        run: yarn test:cov
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+
   deploy:
+    name: Deploy to Kubernetes
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,15 +74,15 @@ jobs:
 
       - name: Helm Upgrade
         env:
-          DB_USER: ${{ secrets.CUSTOMERS_DB_USER }}
-          DB_PASSWORD: ${{ secrets.CUSTOMERS_DB_PASSWORD }}
-          DB_NAME: ${{ secrets.CUSTOMERS_DB_NAME }}
-          DB_HOST: ${{ secrets.CUSTOMERS_DB_HOST }}
+          CUSTOMERS_DB_USER: ${{ secrets.CUSTOMERS_DB_USER }}
+          CUSTOMERS_DB_PASSWORD: ${{ secrets.CUSTOMERS_DB_PASSWORD }}
+          CUSTOMERS_DB_NAME: ${{ secrets.CUSTOMERS_DB_NAME }}
+          CUSTOMERS_DB_HOST: ${{ secrets.CUSTOMERS_DB_HOST }}
         run: |
           helm upgrade --install lanchonete-customers-api ./k8s/lanchonete-customers-api \
-            --set api.env.DB_USER=$DB_USER \
-            --set api.env.DB_PASSWORD=$DB_PASSWORD \
-            --set api.env.DB_NAME=$DB_NAME \
-            --set api.env.DB_HOST=$DB_HOST \
+            --set api.env.DB_USER=${{ env.CUSTOMERS_DB_USER }} \
+            --set api.env.DB_PASSWORD=${{ env.CUSTOMERS_DB_PASSWORD }} \
+            --set api.env.DB_NAME=${{ env.CUSTOMERS_DB_NAME }} \
+            --set api.env.DB_HOST=${{ env.CUSTOMERS_DB_HOST }} \
             --set api.image.repository=${{ env.DOCKER_IMAGE }} \
             --set api.image.tag=${{ env.image_tag }}
