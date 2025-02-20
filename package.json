@@ -11,6 +11,7 @@
     "prepare": "husky",
     "start": "node -r module-alias/register dist/main.js",
     "test": "jest --passWithNoTests --runInBand --no-cache",
+    "test:cov": "npm run test -- --coverage",
     "test:watch": "jest --watch --runInBand --no-cache"
   },
   "keywords": [],
