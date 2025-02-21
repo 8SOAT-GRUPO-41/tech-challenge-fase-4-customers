@@ -1,20 +1,20 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-require('dotenv').config({ path: '.env.test' })
+require("dotenv").config({ path: ".env.test" });
 module.exports = {
-  roots: ['<rootDir>/tests', '<rootDir>/src'],
+  roots: ["<rootDir>/tests", "<rootDir>/src"],
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/main.ts',
-    '!<rootDir>/src/**/index.ts',
-    '!<rootDir>/src/**/protocols/**',
-    '!<rootDir>/src/**/infrastructure/factories/**',
-    '!<rootDir>/src/**/infrastructure/swagger/**',
+    "<rootDir>/src/**/*.ts",
+    "!<rootDir>/src/main.ts",
+    "!<rootDir>/src/**/index.ts",
+    "!<rootDir>/src/**/protocols/**",
+    "!<rootDir>/src/**/infrastructure/factories/**",
+    "!<rootDir>/src/**/infrastructure/swagger/**",
   ],
-  preset: 'ts-jest',
-  testEnvironment: 'node',
+  preset: "ts-jest",
+  testEnvironment: "node",
   moduleNameMapper: {
-    '@/tests/(.*)': '<rootDir>/tests/$1',
-    '@/(.*)': '<rootDir>/src/$1',
+    "@/tests/(.*)": "<rootDir>/tests/$1",
+    "@/(.*)": "<rootDir>/src/$1",
   },
   coverageThreshold: {
     global: {
@@ -24,5 +24,6 @@ module.exports = {
       statements: 70,
     },
   },
-  setupFiles: ['dotenv/config']
-}
+  setupFiles: ["dotenv/config"],
+  testMatch: ["**/*.steps.ts", "**/*.spec.ts"],
+};

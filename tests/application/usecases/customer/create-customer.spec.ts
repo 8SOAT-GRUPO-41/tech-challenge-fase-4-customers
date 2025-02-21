@@ -1,87 +1,103 @@
-import { CreateCustomer } from '@/application/usecases/customer'
-import { CustomerRepositorySpy } from '@/tests/application/mocks'
-import { customerMock } from '@/tests/domain/mocks'
-import { ConflictError } from '@/domain/errors'
-import { throwError } from '@/tests/test-helpers'
+import { CreateCustomer } from "@/application/usecases/customer";
+import { CustomerRepositorySpy } from "@/tests/application/mocks";
+import { customerMock } from "@/tests/domain/mocks";
+import { ConflictError } from "@/domain/errors";
+import { throwError } from "@/tests/test-helpers";
 
-interface SutTypes {
-  sut: CreateCustomer
-  customerRepositorySpy: CustomerRepositorySpy
-}
+describe("CreateCustomer Use Case", () => {
+  let sut: CreateCustomer;
+  let customerRepositorySpy: CustomerRepositorySpy;
 
-const makeSut = (): SutTypes => {
-  const customerRepositorySpy = new CustomerRepositorySpy()
-  const sut = new CreateCustomer(customerRepositorySpy)
-  return {
-    sut,
-    customerRepositorySpy
-  }
-}
+  const customerInput = {
+    cpf: "44204681816",
+    email: "any_email@mail.com",
+    name: "any_name",
+  };
 
-const customerInput = {
-  cpf: '44204681816',
-  email: 'any_email@mail.com',
-  name: 'any_name'
-}
+  beforeEach(() => {
+    customerRepositorySpy = new CustomerRepositorySpy();
+    sut = new CreateCustomer(customerRepositorySpy);
+  });
 
-describe(CreateCustomer.name, () => {
-  it('should create a customer', async () => {
-    const { sut, customerRepositorySpy } = makeSut()
-    customerRepositorySpy.findByCpfResult = null
+  describe("Given a valid customer input", () => {
+    beforeEach(() => {
+      customerRepositorySpy.findByCpfResult = null;
+    });
 
-    const customer = await sut.execute(customerInput)
+    describe("When creating a new customer", () => {
+      let result: any;
 
-    expect(customer.customerId).toBeTruthy()
-    expect(customer.getCpf()).toBe(customerInput.cpf)
-    expect(customer.getEmail()).toBe(customerInput.email)
-    expect(customer.getName()).toBe(customerInput.name)
-  })
+      beforeEach(async () => {
+        result = await sut.execute(customerInput);
+      });
 
-  it('should throw if customer already exists', async () => {
-    const { sut, customerRepositorySpy } = makeSut()
-    customerRepositorySpy.findByCpfResult = customerMock
+      it("Then should create a customer with correct data", () => {
+        expect(result.customerId).toBeTruthy();
+        expect(result.getCpf()).toBe(customerInput.cpf);
+        expect(result.getEmail()).toBe(customerInput.email);
+        expect(result.getName()).toBe(customerInput.name);
+      });
 
-    const promise = sut.execute(customerInput)
+      it("Then should call findByCpf with correct CPF", () => {
+        expect(customerRepositorySpy.findByCpfParams).toBe(customerInput.cpf);
+      });
 
-    await expect(promise).rejects.toThrow(new ConflictError('Customer already exists'))
-  })
+      it("Then should save customer with correct data", () => {
+        expect(customerRepositorySpy.saveParams?.customerId).toBeTruthy();
+        expect(customerRepositorySpy.saveParams?.getCpf()).toBe(
+          customerInput.cpf
+        );
+        expect(customerRepositorySpy.saveParams?.getEmail()).toBe(
+          customerInput.email
+        );
+        expect(customerRepositorySpy.saveParams?.getName()).toBe(
+          customerInput.name
+        );
+      });
+    });
+  });
 
-  it('should throw if findByCpf throws', async () => {
-    const { sut, customerRepositorySpy } = makeSut()
-    jest.spyOn(customerRepositorySpy, 'findByCpf').mockImplementationOnce(throwError)
+  describe("Given a CPF that already exists", () => {
+    beforeEach(() => {
+      customerRepositorySpy.findByCpfResult = customerMock;
+    });
 
-    const promise = sut.execute(customerInput)
+    describe("When creating a customer", () => {
+      it("Then should throw ConflictError", async () => {
+        const promise = sut.execute(customerInput);
+        await expect(promise).rejects.toThrow(
+          new ConflictError("Customer already exists")
+        );
+      });
+    });
+  });
 
-    await expect(promise).rejects.toThrow()
-  })
+  describe("Given a system error scenario", () => {
+    describe("When findByCpf throws", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(customerRepositorySpy, "findByCpf")
+          .mockImplementationOnce(throwError);
+      });
 
-  it('should throw if save throws', async () => {
-    const { sut, customerRepositorySpy } = makeSut()
-    jest.spyOn(customerRepositorySpy, 'save').mockImplementationOnce(throwError)
+      it("Then should propagate the error", async () => {
+        const promise = sut.execute(customerInput);
+        await expect(promise).rejects.toThrow();
+      });
+    });
 
-    const promise = sut.execute(customerInput)
+    describe("When save throws", () => {
+      beforeEach(() => {
+        customerRepositorySpy.findByCpfResult = null;
+        jest
+          .spyOn(customerRepositorySpy, "save")
+          .mockImplementationOnce(throwError);
+      });
 
-    await expect(promise).rejects.toThrow()
-  })
-
-  it('should call findByCpf with correct value', async () => {
-    const { sut, customerRepositorySpy } = makeSut()
-    customerRepositorySpy.findByCpfResult = null
-
-    await sut.execute(customerInput)
-
-    expect(customerRepositorySpy.findByCpfParams).toBe(customerInput.cpf)
-  })
-
-  it('should call save with correct value', async () => {
-    const { sut, customerRepositorySpy } = makeSut()
-    customerRepositorySpy.findByCpfResult = null
-
-    await sut.execute(customerInput)
-
-    expect(customerRepositorySpy.saveParams?.customerId).toBeTruthy()
-    expect(customerRepositorySpy.saveParams?.getCpf()).toBe(customerInput.cpf)
-    expect(customerRepositorySpy.saveParams?.getEmail()).toBe(customerInput.email)
-    expect(customerRepositorySpy.saveParams?.getName()).toBe(customerInput.name)
-  })
-})
+      it("Then should propagate the error", async () => {
+        const promise = sut.execute(customerInput);
+        await expect(promise).rejects.toThrow();
+      });
+    });
+  });
+});
